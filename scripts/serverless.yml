@@ -1,0 +1,37 @@
+service: discord-gpt
+
+provider:
+  name: aws
+  runtime: python3.9
+  stage: dev
+  region: us-east-1
+  environment:
+    OPENAI_API_KEY: ${env:OPENAI_API_KEY}
+    MODE: ${env:MODE}
+    #MODEL_ENGINE: ${env:MODEL_ENGINE}
+    #DISCORD_TOKEN: ${env:DISCORD_TOKEN}
+    #DISCORD_BOT_HTTP: ${env:DISCORD_BOT_HTTP}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "lambda:InvokeFunction"
+        - "lambda:InvokeAsync"
+      Resource: "*"
+
+functions:
+  handler:
+    name: handler
+    handler: handler.handler
+    events:
+      - http:
+          path: handler
+          method: post
+          cors: true
+  chatgpt:
+    name: chatgpt
+    handler: chatgpt.answer_to_prompt
+    events:
+      - http:
+          path: answer_to_prompt
+          method: post
+          cors: true
